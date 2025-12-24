@@ -12,9 +12,9 @@
         }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #000;
-            color: white;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #000000;
+            color: #ffffff;
             height: 100vh;
             overflow: hidden;
         }
@@ -23,276 +23,848 @@
             height: 100vh;
             display: flex;
             flex-direction: column;
+            background: #000;
         }
         
+        /* Header */
         .header {
-            background: #1a1a1a;
-            padding: 15px;
-            border-bottom: 1px solid #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 15px 20px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 10;
         }
         
         .back-btn {
-            background: none;
+            background: rgba(255, 255, 255, 0.2);
             border: none;
             color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-size: 20px;
             cursor: pointer;
-            padding: 5px;
+            transition: all 0.3s ease;
         }
         
-        .title {
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+        
+        .title-container {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .drama-title {
             font-size: 16px;
-            font-weight: 500;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 3px;
+        }
+        
+        .episode-info {
+            font-size: 13px;
+            opacity: 0.9;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
         
+        /* Player Area */
         .player-container {
             flex: 1;
             background: #000;
             position: relative;
+            overflow: hidden;
         }
         
         #videoPlayer {
             width: 100%;
             height: 100%;
             background: #000;
+            object-fit: contain;
         }
         
-        .loading {
+        /* Loading State */
+        .loading-overlay {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            color: #888;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 20;
+            transition: opacity 0.3s ease;
         }
         
-        .error {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #667eea;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .loading-text {
+            font-size: 16px;
+            color: #aaa;
             text-align: center;
-            background: rgba(255,0,0,0.1);
-            padding: 20px;
-            border-radius: 10px;
-            border: 1px solid #f00;
-            max-width: 80%;
+        }
+        
+        /* Error State */
+        .error-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
             display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 30;
+            padding: 20px;
+            text-align: center;
         }
         
-        .controls {
-            background: rgba(0,0,0,0.9);
-            padding: 15px;
+        .error-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+            color: #ff4757;
+        }
+        
+        .error-title {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #ff4757;
+        }
+        
+        .error-message {
+            font-size: 15px;
+            color: #aaa;
+            margin-bottom: 25px;
+            line-height: 1.4;
+            max-width: 300px;
+        }
+        
+        .retry-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .retry-btn:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+        }
+        
+        /* Controls */
+        .controls-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+            padding: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            gap: 10px;
+            gap: 15px;
+            z-index: 5;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .player-container:hover .controls-overlay {
+            opacity: 1;
         }
         
         .control-btn {
-            background: #007AFF;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             color: white;
-            border: none;
-            padding: 10px 15px;
+            padding: 10px 20px;
             border-radius: 8px;
             cursor: pointer;
             font-size: 14px;
             display: flex;
             align-items: center;
-            gap: 5px;
-            min-width: 100px;
+            gap: 8px;
+            transition: all 0.3s ease;
+            min-width: 120px;
             justify-content: center;
         }
         
-        .episode-select {
-            background: #333;
-            color: white;
-            border: 1px solid #555;
-            padding: 8px 12px;
-            border-radius: 6px;
-            min-width: 150px;
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
         }
         
-        @media (max-width: 600px) {
-            .controls {
-                flex-direction: column;
+        .episode-select {
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 14px;
+            min-width: 180px;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+        }
+        
+        .episode-select option {
+            background: #1a1a1a;
+            color: white;
+        }
+        
+        /* Quality Selector */
+        .quality-selector {
+            position: absolute;
+            top: 70px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 10px;
+            display: none;
+            z-index: 40;
+            backdrop-filter: blur(10px);
+        }
+        
+        .quality-btn {
+            background: transparent;
+            border: none;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            text-align: left;
+            transition: background 0.3s ease;
+        }
+        
+        .quality-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .quality-btn.active {
+            background: #667eea;
+        }
+        
+        /* Stats */
+        .stats {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            color: #aaa;
+            display: none;
+            z-index: 5;
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .header {
+                padding: 12px 15px;
             }
+            
+            .controls-overlay {
+                flex-direction: column;
+                padding: 15px;
+            }
+            
             .control-btn, .episode-select {
                 width: 100%;
             }
+            
+            .drama-title {
+                font-size: 15px;
+            }
+            
+            .episode-info {
+                font-size: 12px;
+            }
+        }
+        
+        /* Fullscreen mode */
+        :fullscreen .header,
+        :fullscreen .controls-overlay,
+        :fullscreen .stats {
+            display: none;
+        }
+        
+        :fullscreen .player-container {
+            background: #000;
+        }
+        
+        /* Progress bar */
+        .progress-container {
+            position: absolute;
+            bottom: 70px;
+            left: 20px;
+            right: 20px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+            overflow: hidden;
+            display: none;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: #667eea;
+            width: 0%;
+            transition: width 0.1s linear;
+        }
+        
+        .player-container:hover .progress-container {
+            display: block;
         }
     </style>
 </head>
 <body>
     <div class="container">
+        <!-- Header -->
         <div class="header">
             <button class="back-btn" onclick="goBack()">←</button>
-            <div class="title" id="videoTitle">Loading...</div>
+            <div class="title-container">
+                <div class="drama-title" id="dramaTitle">Loading Drama...</div>
+                <div class="episode-info" id="episodeInfo">Episode Loading...</div>
+            </div>
         </div>
         
+        <!-- Player Container -->
         <div class="player-container">
-            <video id="videoPlayer" controls playsinline></video>
+            <!-- Video Player -->
+            <video id="videoPlayer" playsinline></video>
             
-            <div class="loading" id="loading">
-                Loading video...
+            <!-- Loading Overlay -->
+            <div class="loading-overlay" id="loadingOverlay">
+                <div class="loading-spinner"></div>
+                <div class="loading-text" id="loadingText">Loading video...</div>
             </div>
             
-            <div class="error" id="errorBox">
-                <h3>Error</h3>
-                <p id="errorText"></p>
-                <button class="control-btn" onclick="retry()" style="margin-top: 10px;">Retry</button>
+            <!-- Error Overlay -->
+            <div class="error-overlay" id="errorOverlay">
+                <div class="error-icon">⚠️</div>
+                <div class="error-title" id="errorTitle">Playback Error</div>
+                <div class="error-message" id="errorMessage">Unable to load the video. Please check your connection.</div>
+                <button class="retry-btn" onclick="retryPlayback()">Retry Playback</button>
             </div>
-        </div>
-        
-        <div class="controls">
-            <button class="control-btn" onclick="prevEpisode()">← Previous</button>
-            <select class="episode-select" id="episodeSelect">
-                <option>Loading episodes...</option>
-            </select>
-            <button class="control-btn" onclick="nextEpisode()">Next →</button>
+            
+            <!-- Controls Overlay -->
+            <div class="controls-overlay">
+                <button class="control-btn" onclick="previousEpisode()">
+                    <span>◀</span> Previous
+                </button>
+                
+                <select class="episode-select" id="episodeSelect">
+                    <option value="">Select Episode...</option>
+                </select>
+                
+                <button class="control-btn" onclick="nextEpisode()">
+                    Next <span>▶</span>
+                </button>
+            </div>
+            
+            <!-- Progress Bar -->
+            <div class="progress-container">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+            
+            <!-- Stats -->
+            <div class="stats" id="stats">
+                Speed: <span id="speed">0</span> KB/s
+            </div>
+            
+            <!-- Quality Selector -->
+            <div class="quality-selector" id="qualitySelector">
+                <button class="quality-btn active" onclick="changeQuality('direct')">Direct (Recommended)</button>
+                <button class="quality-btn" onclick="changeQuality('alt')">Alternative</button>
+                <button class="quality-btn" onclick="changeQuality('api')">API Stream</button>
+            </div>
         </div>
     </div>
 
     <script>
-        // Telegram WebApp
+        // ============================================
+        // INITIALIZATION
+        // ============================================
+        
+        // Telegram WebApp initialization
         const tg = window.Telegram.WebApp;
         
-        // Initialize
+        // Initialize WebApp
         tg.expand();
         tg.BackButton.show();
         tg.BackButton.onClick(() => {
             tg.close();
         });
         
-        // Get URL parameters
-        const urlParams = new URLSearchParams(window.location.search);
-        const drama = urlParams.get('drama') || 'Unknown';
-        const episode = urlParams.get('episode') || 's01e01';
-        const streamUrl = urlParams.get('url');
-        
-        // DOM elements
+        // DOM Elements
         const videoPlayer = document.getElementById('videoPlayer');
-        const videoTitle = document.getElementById('videoTitle');
+        const dramaTitle = document.getElementById('dramaTitle');
+        const episodeInfo = document.getElementById('episodeInfo');
         const episodeSelect = document.getElementById('episodeSelect');
-        const loading = document.getElementById('loading');
-        const errorBox = document.getElementById('errorBox');
-        const errorText = document.getElementById('errorText');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const loadingText = document.getElementById('loadingText');
+        const errorOverlay = document.getElementById('errorOverlay');
+        const errorTitle = document.getElementById('errorTitle');
+        const errorMessage = document.getElementById('errorMessage');
+        const progressBar = document.getElementById('progressBar');
+        const stats = document.getElementById('stats');
+        const speedText = document.getElementById('speed');
+        const qualitySelector = document.getElementById('qualitySelector');
         
-        // Current state
-        let currentEpisode = episode;
-        let allEpisodes = [];
+        // State variables
+        let currentFileId = '';
+        let currentQuality = 'direct';
+        let currentUrlIndex = 0;
+        let playbackUrls = [];
+        let isPlaying = false;
+        let lastSpeedUpdate = Date.now();
+        let loadedBytes = 0;
         
-        // Initialize
-        function init() {
-            videoTitle.textContent = `${drama} - ${episode.toUpperCase()}`;
-            
-            if (streamUrl) {
-                loadVideo(streamUrl);
-            } else {
-                showError('No video URL provided');
-            }
-            
-            // Load episode list (simplified)
-            loadEpisodes();
+        // ============================================
+        // URL PARAMETERS
+        // ============================================
+        
+        // Get parameters from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const dramaName = urlParams.get('drama') || 'Unknown Drama';
+        const episodeId = urlParams.get('episode') || 's01e01';
+        const fileId = urlParams.get('file_id');
+        
+        // Set titles
+        dramaTitle.textContent = dramaName;
+        episodeInfo.textContent = `Episode: ${episodeId.toUpperCase()}`;
+        document.title = `${episodeId.toUpperCase()} - ${dramaName}`;
+        
+        // ============================================
+        // GOOGLE DRIVE URL GENERATORS
+        // ============================================
+        
+        function createGoogleDriveUrls(fileId) {
+            return {
+                'direct': `https://drive.google.com/uc?id=${fileId}&export=download`,
+                'alt': `https://docs.google.com/uc?export=download&id=${fileId}`,
+                'api': `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`,
+                'preview': `https://drive.google.com/file/d/${fileId}/preview`
+            };
         }
         
-        function loadVideo(url) {
-            loading.style.display = 'block';
-            errorBox.style.display = 'none';
+        function getCurrentUrl() {
+            return playbackUrls[currentQuality] || playbackUrls['direct'];
+        }
+        
+        // ============================================
+        // VIDEO PLAYBACK FUNCTIONS
+        // ============================================
+        
+        async function loadVideo() {
+            if (!fileId) {
+                showError('No video file ID provided', 'Missing File ID');
+                return;
+            }
             
-            videoPlayer.src = url;
+            currentFileId = fileId;
+            playbackUrls = createGoogleDriveUrls(fileId);
+            
+            showLoading('Initializing player...');
+            hideError();
+            
+            // Set video source
+            const videoUrl = getCurrentUrl();
+            videoPlayer.src = videoUrl;
+            
+            console.log('Loading video from:', videoUrl);
+            
+            // Set up event listeners (only once)
+            setupVideoEvents();
+            
+            // Load the video
             videoPlayer.load();
             
+            // Set timeout for loading
+            setTimeout(() => {
+                if (!isPlaying && loadingOverlay.style.display !== 'none') {
+                    console.log('Loading timeout, trying alternative URL...');
+                    tryAlternativeUrl();
+                }
+            }, 10000); // 10 seconds timeout
+        }
+        
+        function tryAlternativeUrl() {
+            const qualities = ['direct', 'alt', 'api'];
+            const currentIndex = qualities.indexOf(currentQuality);
+            
+            if (currentIndex < qualities.length - 1) {
+                // Try next quality
+                const nextQuality = qualities[currentIndex + 1];
+                changeQuality(nextQuality);
+                showLoading(`Trying ${nextQuality} stream...`);
+            } else {
+                showError(
+                    'All streaming methods failed. The video might be:',
+                    'Playback Failed'
+                );
+                errorMessage.innerHTML = `
+                    1. Private or deleted<br>
+                    2. Too large for streaming<br>
+                    3. Not accessible publicly<br>
+                    <br>
+                    <small>File ID: ${currentFileId.substring(0, 20)}...</small>
+                `;
+            }
+        }
+        
+        function changeQuality(quality) {
+            currentQuality = quality;
+            const videoUrl = getCurrentUrl();
+            
+            showLoading(`Loading ${quality} stream...`);
+            hideError();
+            
+            // Update active button in quality selector
+            document.querySelectorAll('.quality-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.onclick.toString().includes(`'${quality}'`)) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            // Change video source
+            const currentTime = videoPlayer.currentTime;
+            videoPlayer.src = videoUrl;
+            videoPlayer.currentTime = currentTime;
+            videoPlayer.load();
+            
+            console.log('Changed to quality:', quality, 'URL:', videoUrl);
+        }
+        
+        // ============================================
+        // EVENT HANDLERS
+        // ============================================
+        
+        function setupVideoEvents() {
+            // Remove existing listeners to avoid duplicates
+            videoPlayer.oncanplay = null;
+            videoPlayer.onplaying = null;
+            videoPlayer.onerror = null;
+            videoPlayer.ontimeupdate = null;
+            videoPlayer.onprogress = null;
+            
+            // Can play - video is ready
             videoPlayer.oncanplay = () => {
-                loading.style.display = 'none';
-                videoPlayer.play().catch(e => {
-                    console.log('Autoplay blocked:', e);
-                    loading.style.display = 'none';
+                console.log('Video can play');
+                hideLoading();
+                
+                // Try to autoplay
+                videoPlayer.play().then(() => {
+                    console.log('Autoplay started');
+                    isPlaying = true;
+                }).catch(error => {
+                    console.log('Autoplay blocked:', error);
+                    hideLoading();
+                    // Show play button overlay
+                    loadingText.textContent = 'Tap to play';
+                    loadingOverlay.style.display = 'flex';
+                    loadingOverlay.style.cursor = 'pointer';
+                    loadingOverlay.onclick = () => {
+                        videoPlayer.play();
+                        loadingOverlay.style.display = 'none';
+                    };
                 });
             };
             
+            // Playing started
+            videoPlayer.onplaying = () => {
+                console.log('Video is playing');
+                isPlaying = true;
+                hideLoading();
+                hideError();
+            };
+            
+            // Time update for progress bar
+            videoPlayer.ontimeupdate = () => {
+                if (videoPlayer.duration) {
+                    const progress = (videoPlayer.currentTime / videoPlayer.duration) * 100;
+                    progressBar.style.width = `${progress}%`;
+                }
+            };
+            
+            // Progress for buffering and speed calculation
+            videoPlayer.onprogress = () => {
+                const now = Date.now();
+                const timeDiff = now - lastSpeedUpdate;
+                
+                if (timeDiff > 1000) { // Update every second
+                    if (videoPlayer.buffered.length > 0) {
+                        const bufferedEnd = videoPlayer.buffered.end(videoPlayer.buffered.length - 1);
+                        const currentTime = videoPlayer.currentTime;
+                        
+                        // Calculate download speed
+                        const newLoadedBytes = videoPlayer.buffered.length ? 
+                            videoPlayer.buffered.end(0) * (videoPlayer.buffered.length > 0 ? videoPlayer.buffered.length : 1) : 0;
+                        const bytesLoaded = newLoadedBytes - loadedBytes;
+                        const speedKBps = (bytesLoaded / 1024) / (timeDiff / 1000);
+                        
+                        loadedBytes = newLoadedBytes;
+                        lastSpeedUpdate = now;
+                        
+                        // Update stats
+                        speedText.textContent = speedKBps.toFixed(1);
+                        stats.style.display = 'block';
+                        
+                        // Show buffering if needed
+                        if (bufferedEnd - currentTime < 5) { // Less than 5 seconds buffered
+                            if (!loadingOverlay.style.display || loadingOverlay.style.display === 'none') {
+                                showLoading('Buffering...');
+                            }
+                        } else {
+                            hideLoading();
+                        }
+                    }
+                }
+            };
+            
+            // Error handling
             videoPlayer.onerror = (e) => {
-                loading.style.display = 'none';
-                showError('Failed to load video. Check your connection.');
                 console.error('Video error:', videoPlayer.error);
+                isPlaying = false;
+                
+                let errorMsg = 'Failed to play video. ';
+                let errorTitle = 'Playback Error';
+                
+                switch(videoPlayer.error?.code) {
+                    case 1:
+                        errorMsg += 'Video was aborted.';
+                        break;
+                    case 2:
+                        errorMsg += 'Network error. Check your internet connection.';
+                        errorTitle = 'Network Error';
+                        break;
+                    case 3:
+                        errorMsg += 'Video decoding failed.';
+                        errorTitle = 'Decoding Error';
+                        break;
+                    case 4:
+                        errorMsg += 'Video format not supported.';
+                        errorTitle = 'Format Error';
+                        break;
+                    default:
+                        errorMsg += 'Unknown error occurred.';
+                }
+                
+                showError(errorMsg, errorTitle);
+                console.log('Trying alternative URL due to error');
+                setTimeout(tryAlternativeUrl, 2000);
+            };
+            
+            // Ended
+            videoPlayer.onended = () => {
+                console.log('Video ended');
+                // Here you could auto-play next episode if available
+            };
+            
+            // Waiting (buffering)
+            videoPlayer.onwaiting = () => {
+                if (!loadingOverlay.style.display || loadingOverlay.style.display === 'none') {
+                    showLoading('Buffering...');
+                }
             };
         }
         
-        function loadEpisodes() {
-            // This should fetch from your API
-            // For now, just show current episode
-            episodeSelect.innerHTML = `
-                <option value="${streamUrl}" selected>${episode.toUpperCase()}</option>
-            `;
+        // ============================================
+        // UI CONTROLS
+        // ============================================
+        
+        function showLoading(text = 'Loading...') {
+            loadingText.textContent = text;
+            loadingOverlay.style.display = 'flex';
         }
         
-        function changeEpisode(url) {
-            if (url) {
-                loadVideo(url);
-            }
+        function hideLoading() {
+            loadingOverlay.style.display = 'none';
         }
         
-        function prevEpisode() {
-            tg.showAlert('Previous episode would play if episode list API is implemented');
+        function showError(message, title = 'Error') {
+            errorTitle.textContent = title;
+            errorMessage.textContent = message;
+            errorOverlay.style.display = 'flex';
+            hideLoading();
+        }
+        
+        function hideError() {
+            errorOverlay.style.display = 'none';
+        }
+        
+        function retryPlayback() {
+            hideError();
+            loadVideo();
+        }
+        
+        function previousEpisode() {
+            tg.showAlert('Previous episode would play if episode list is implemented');
         }
         
         function nextEpisode() {
-            tg.showAlert('Next episode would play if episode list API is implemented');
-        }
-        
-        function showError(message) {
-            errorText.textContent = message;
-            errorBox.style.display = 'block';
-        }
-        
-        function retry() {
-            if (streamUrl) {
-                loadVideo(streamUrl);
-            }
+            tg.showAlert('Next episode would play if episode list is implemented');
         }
         
         function goBack() {
             tg.close();
         }
         
-        // Episode select change
-        episodeSelect.addEventListener('change', function() {
-            changeEpisode(this.value);
-        });
+        function toggleQualitySelector() {
+            qualitySelector.style.display = 
+                qualitySelector.style.display === 'block' ? 'none' : 'block';
+        }
         
-        // Keyboard shortcuts
-        document.addEventListener('keydown', function(e) {
-            switch(e.key) {
+        // ============================================
+        // KEYBOARD SHORTCUTS
+        // ============================================
+        
+        document.addEventListener('keydown', (e) => {
+            switch(e.key.toLowerCase()) {
                 case ' ':
                 case 'k':
-                    if (videoPlayer.paused) videoPlayer.play();
-                    else videoPlayer.pause();
+                    // Play/Pause
+                    if (videoPlayer.paused) {
+                        videoPlayer.play();
+                    } else {
+                        videoPlayer.pause();
+                    }
                     e.preventDefault();
                     break;
-                case 'ArrowLeft':
-                    videoPlayer.currentTime -= 10;
+                    
+                case 'arrowleft':
+                    // Seek back 10 seconds
+                    videoPlayer.currentTime = Math.max(0, videoPlayer.currentTime - 10);
                     break;
-                case 'ArrowRight':
-                    videoPlayer.currentTime += 10;
+                    
+                case 'arrowright':
+                    // Seek forward 10 seconds
+                    videoPlayer.currentTime = Math.min(videoPlayer.duration, videoPlayer.currentTime + 10);
                     break;
+                    
                 case 'f':
+                    // Toggle fullscreen
                     if (!document.fullscreenElement) {
-                        videoPlayer.requestFullscreen();
+                        videoPlayer.requestFullscreen().catch(console.log);
                     } else {
                         document.exitFullscreen();
                     }
                     break;
+                    
+                case 'm':
+                    // Toggle mute
+                    videoPlayer.muted = !videoPlayer.muted;
+                    break;
+                    
+                case 'q':
+                    // Toggle quality selector
+                    toggleQualitySelector();
+                    break;
             }
         });
         
-        // Start
-        init();
+        // ============================================
+        // EPISODE SELECTOR
+        // ============================================
+        
+        // This would be populated from an API in a real implementation
+        function populateEpisodeSelect() {
+            // For now, just add the current episode
+            const option = document.createElement('option');
+            option.value = fileId;
+            option.textContent = `${episodeId.toUpperCase()} - Current Episode`;
+            option.selected = true;
+            episodeSelect.appendChild(option);
+        }
+        
+        episodeSelect.addEventListener('change', function() {
+            // In a real implementation, this would load a different episode
+            tg.showAlert('Episode switching requires episode list API');
+        });
+        
+        // ============================================
+        // INITIALIZATION
+        // ============================================
+        
+        // Start loading video
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Player initialized');
+            console.log('Drama:', dramaName);
+            console.log('Episode:', episodeId);
+            console.log('File ID:', fileId ? `${fileId.substring(0, 20)}...` : 'None');
+            
+            populateEpisodeSelect();
+            loadVideo();
+            
+            // Show quality selector on video right-click
+            videoPlayer.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                toggleQualitySelector();
+            });
+            
+            // Hide quality selector when clicking elsewhere
+            document.addEventListener('click', (e) => {
+                if (!qualitySelector.contains(e.target) && e.target !== videoPlayer) {
+                    qualitySelector.style.display = 'none';
+                }
+            });
+        });
+        
+        // Handle page visibility changes
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                // Page is hidden, pause video
+                if (!videoPlayer.paused) {
+                    videoPlayer.pause();
+                }
+            }
+        });
+        
+        // Clean up on page unload
+        window.addEventListener('beforeunload', () => {
+            videoPlayer.pause();
+            videoPlayer.src = '';
+            videoPlayer.load();
+        });
     </script>
 </body>
-</html>
+    </html>
