@@ -515,68 +515,120 @@
         }
         
         // ============================================
-        // KEYBOARD SHORTCUTS
-        // ============================================
+async function loadVideo() {
+    if (currentStreamIndex >= STREAM_METHODS.length) {
+        currentStreamIndex = 0;
+    }
+    
+    const method = STREAM_METHODS[currentStreamIndex];
+    
+    console.log(`🔄 Loading: ${method.name}`);
+    showLoading(`Loading ${method.name}...`);
+    hideError();
+    
+    // Clear previous source
+    videoPlayer.src = '';
+    videoPlayer.load();
+    
+    if (method.name === 'Google Drive API') {
+        // USE STREAMING FIX for API method
+        await streamVideoWithBlob(currentFileId);
+    } else {
+        // Use normal method for other URLs
+        const streamUrl = method.getUrl(currentFileId);
+        const timestamp = new Date().getTime();
+        const finalUrl = `${streamUrl}&_=${timestamp}`;
         
-        document.addEventListener('keydown', (e) => {
-            switch(e.key.toLowerCase()) {
-                case ' ':
-                case 'k':
-                    if (videoPlayer.paused) videoPlayer.play();
-                    else videoPlayer.pause();
-                    e.preventDefault();
-                    break;
-                    
-                case 'arrowleft':
-                    videoPlayer.currentTime -= 10;
-                    break;
-                    
-                case 'arrowright':
-                    videoPlayer.currentTime += 10;
-                    break;
-                    
-                case 'f':
-                    if (!document.fullscreenElement) {
-                        videoPlayer.requestFullscreen();
-                    } else {
-                        document.exitFullscreen();
-                    }
-                    break;
+        videoPlayer.src = finalUrl;
+        videoPlayer.load();
+    }
+    
+    // Set timeout
+    setTimeout(() => {
+        if (videoPlayer.readyState < 2 && currentStreamIndex < STREAM_METHODS.length - 1) {
+            console.log('⏰ Load timeout, trying next method');
+            currentStreamIndex++;
+            loadVideo();
+        }
+    }, 10000);
+}
+
+// ============================================
+// STREAMING FIX FUNCTION (ADD THIS)
+// ============================================
+
+async function streamVideoWithBlob(fileId) {
+    try {
+        console.log('🎬 Using streaming fix for Google Drive API');
+        
+        const apiUrl = `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media&key=${GOOGLE_DRIVE_API_KEY}`;
+        
+        // Show loading message
+        showLoading('Fetching video stream...');
+        
+        // Fetch video with streaming headers
+        const response = await fetch(apiUrl, {
+            headers: {
+                'Accept': 'video/*',
+                'Range': 'bytes=0-'
             }
         });
         
-        // ============================================
-        // INITIALIZE
-        // ============================================
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
         
-        document.addEventListener('DOMContentLoaded', () => {
-            console.log('🎬 Drama Player Initialized');
-            
-            // Check if API key is set
-            if (!GOOGLE_DRIVE_API_KEY || GOOGLE_DRIVE_API_KEY.includes('AIzaSyC-ZD6viBW3wT8uKy58bLClQHISnYkD8-M')) {
-                console.warn('⚠️ Please set your Google Drive API Key');
-                showError(
-                    'API Key Required',
-                    'Please set your Google Drive API Key in the script.\n\nGet it from: https://console.cloud.google.com/apis/credentials'
-                );
-            } else {
-                initPlayer();
-            }
-            
-            // Handle page visibility
-            document.addEventListener('visibilitychange', () => {
-                if (document.hidden && !videoPlayer.paused) {
-                    videoPlayer.pause();
-                }
-            });
+        // Get video as blob
+        const blob = await response.blob();
+        console.log('✅ Video blob loaded:', blob.size, 'bytes');
+        
+        // Create object URL for streaming
+        const blobUrl = URL.createObjectURL(blob);
+        
+        // Set as video source
+        videoPlayer.src = blobUrl;
+        videoPlayer.load();
+        
+        console.log('🎥 Video source set to blob URL');
+        
+        // Set up cleanup when video ends
+        videoPlayer.onended = () => {
+            URL.revokeObjectURL(blobUrl);
+            console.log('🧹 Cleaned up blob URL');
+        };
+        
+        // Also cleanup on error
+        videoPlayer.onerror = () => {
+            URL.revokeObjectURL(blobUrl);
+        };
+        
+        // Try to play
+        videoPlayer.play().catch(e => {
+            console.log('⏸️ Autoplay blocked, waiting for user');
+            hideLoading();
+            loadingText.textContent = 'Tap to play';
+            loadingOverlay.style.display = 'flex';
+            loadingOverlay.style.cursor = 'pointer';
+            loadingOverlay.onclick = () => {
+                videoPlayer.play();
+                loadingOverlay.style.display = 'none';
+            };
         });
         
-        // Cleanup
-        window.addEventListener('beforeunload', () => {
-            videoPlayer.pause();
-            videoPlayer.src = '';
-            videoPlayer.load();
-        });
+    } catch (error) {
+        console.error('❌ Streaming fix failed:', error);
+        
+        // Fallback to direct URL
+        console.log('🔄 Falling back to direct URL');
+        currentStreamIndex = 1; // Skip to direct link method
+        const streamUrl = STREAM_METHODS[1].getUrl(fileId);
+        const timestamp = new Date().getTime();
+        const finalUrl = `${streamUrl}&_=${timestamp}`;
+        
+        videoPlayer.src = finalUrl;
+        videoPlayer.load();
+    }
+        }
     </script>
 </body>
     </html>
