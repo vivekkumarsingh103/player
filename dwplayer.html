@@ -2,17 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DWPLAYER</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Video Player</title>
     <style>
-        :root {
-            --primary-color: #0088cc;
-            --bg-color: #0f0f0f;
-            --secondary-bg: #1a1a1a;
-            --text-color: #ffffff;
-        }
-        
         * {
             margin: 0;
             padding: 0;
@@ -20,68 +12,25 @@
         }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-            background: var(--bg-color);
-            color: var(--text-color);
-            height: 100vh;
-            overflow: hidden;
-            touch-action: manipulation;
-        }
-        
-        .container {
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-        }
-        
-        .header {
-            padding: 12px 16px;
-            background: var(--secondary-bg);
-            border-bottom: 1px solid #333;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .logo i {
-            color: var(--primary-color);
-        }
-        
-        .title {
-            font-size: 16px;
-            font-weight: 500;
-        }
-        
-        .close-btn {
-            background: #333;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        
-        .player-wrapper {
-            flex: 1;
-            position: relative;
             background: #000;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             overflow: hidden;
         }
         
-        #drive-frame {
+        .video-container {
             width: 100%;
             height: 100%;
-            border: none;
+            position: relative;
+        }
+        
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: #000;
         }
         
         .loading-screen {
@@ -103,7 +52,7 @@
             width: 50px;
             height: 50px;
             border: 3px solid #333;
-            border-top: 3px solid var(--primary-color);
+            border-top: 3px solid #0088cc;
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
@@ -114,6 +63,7 @@
         }
         
         .loading-text {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             font-size: 16px;
             color: #aaa;
         }
@@ -142,12 +92,14 @@
         }
         
         .error-title {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             font-size: 20px;
             font-weight: 600;
             color: #fff;
         }
         
         .error-message {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             color: #aaa;
             font-size: 14px;
             max-width: 300px;
@@ -155,7 +107,7 @@
         }
         
         .retry-btn {
-            background: var(--primary-color);
+            background: #0088cc;
             color: white;
             border: none;
             padding: 10px 20px;
@@ -163,384 +115,206 @@
             cursor: pointer;
             font-size: 14px;
             margin-top: 10px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
         
-        .controls {
-            padding: 12px 16px;
-            background: var(--secondary-bg);
-            border-top: 1px solid #333;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        
-        .control-btn {
-            background: #333;
-            color: white;
-            border: none;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-        }
-        
-        .control-btn.play {
-            background: var(--primary-color);
-        }
-        
-        .volume-container {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            width: 100px;
-        }
-        
-        .volume-slider {
-            width: 100%;
-            height: 4px;
-            -webkit-appearance: none;
-            background: #555;
-            border-radius: 2px;
-            outline: none;
-        }
-        
-        .volume-slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 12px;
-            height: 12px;
-            background: var(--primary-color);
-            border-radius: 50%;
-            cursor: pointer;
-        }
-        
-        .time-display {
-            font-size: 14px;
-            color: #aaa;
-            min-width: 100px;
-            text-align: center;
-        }
-        
-        .fullscreen-btn {
-            margin-left: auto;
-        }
-        
-        .info-panel {
+        .play-btn {
             position: absolute;
-            bottom: 80px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80px;
+            height: 80px;
+            background: rgba(0, 0, 0, 0.7);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 30px;
+            cursor: pointer;
+            display: none;
+            z-index: 5;
+            transition: all 0.3s;
+        }
+        
+        .play-btn:hover {
+            background: rgba(0, 0, 0, 0.9);
+            transform: translate(-50%, -50%) scale(1.1);
+        }
+        
+        .controls-overlay {
+            position: absolute;
+            bottom: 0;
             left: 0;
             right: 0;
-            background: rgba(0,0,0,0.8);
-            padding: 15px;
-            margin: 0 15px;
-            border-radius: 10px;
-            font-size: 13px;
-            line-height: 1.5;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+            padding: 20px;
             display: none;
             z-index: 5;
         }
         
-        .info-panel h4 {
-            margin-bottom: 8px;
-            color: var(--primary-color);
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 2px;
+            margin-top: 10px;
+            overflow: hidden;
         }
         
-        .info-panel ul {
-            padding-left: 20px;
-            color: #ccc;
-        }
-        
-        .info-panel li {
-            margin-bottom: 5px;
-        }
-        
-        .info-btn {
-            position: absolute;
-            top: 15px;
-            right: 60px;
-            background: rgba(0,0,0,0.7);
-            color: white;
-            border: none;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            cursor: pointer;
-            z-index: 5;
-        }
-        
-        @media (max-width: 480px) {
-            .controls {
-                padding: 10px;
-            }
-            
-            .control-btn {
-                width: 36px;
-                height: 36px;
-                font-size: 16px;
-            }
-            
-            .time-display {
-                font-size: 12px;
-                min-width: 85px;
-            }
+        .progress-fill {
+            width: 0%;
+            height: 100%;
+            background: #0088cc;
+            border-radius: 2px;
+            transition: width 0.1s;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <div class="logo">
-                <i class="fab fa-google-drive"></i>
-                <div class="title">DWPLAYER</div>
+    <div class="video-container">
+        <div class="loading-screen" id="loadingScreen">
+            <div class="spinner"></div>
+            <div class="loading-text">Loading video...</div>
+        </div>
+        
+        <div class="error-screen" id="errorScreen">
+            <div class="error-icon">
+                <i class="fas fa-exclamation-triangle"></i>
             </div>
-            <button class="close-btn" onclick="window.Telegram.WebApp.close()">
-                <i class="fas fa-times"></i> Close
+            <div class="error-title" id="errorTitle">Unable to Load Video</div>
+            <div class="error-message" id="errorMessage"></div>
+            <button class="retry-btn" onclick="retryLoading()">
+                <i class="fas fa-redo"></i> Try Again
             </button>
         </div>
         
-        <div class="player-wrapper">
-            <button class="info-btn" onclick="toggleInfo()">
-                <i class="fas fa-info"></i>
-            </button>
-            
-            <div class="loading-screen" id="loadingScreen">
-                <div class="spinner"></div>
-                <div class="loading-text">Loading DWPLAYER...</div>
-            </div>
-            
-            <div class="error-screen" id="errorScreen">
-                <div class="error-icon">
-                    <i class="fas fa-exclamation-triangle"></i>
-                </div>
-                <div class="error-title" id="errorTitle">Unable to Load Video</div>
-                <div class="error-message" id="errorMessage"></div>
-                <button class="retry-btn" onclick="retryLoading()">
-                    <i class="fas fa-redo"></i> Try Again
-                </button>
-            </div>
-            
-            <iframe 
-                id="drive-frame" 
-                allow="autoplay; fullscreen" 
-                allowfullscreen
-                style="display: none;"
-            ></iframe>
-            
-            <div class="info-panel" id="infoPanel">
-                <h4>💡 Player Instructions:</h4>
-                <ul>
-                    <li>Use play/pause button or spacebar</li>
-                    <li>Arrow keys for 10s skip</li>
-                    <li>'F' key for fullscreen</li>
-                    <li>Drag volume slider to adjust</li>
-                    <li>Tap screen to show/hide controls</li>
-                </ul>
-                <p style="margin-top: 10px; color: #888;">
-                    If video doesn't load, make sure the file is shared with "Anyone with the link"
-                </p>
-            </div>
-        </div>
+        <video id="videoPlayer" preload="metadata" playsinline>
+            <!-- Video source will be set dynamically -->
+        </video>
         
-        <div class="controls">
-            <button class="control-btn play" id="playBtn" onclick="togglePlayPause()">
-                <i class="fas fa-play" id="playIcon"></i>
-            </button>
-            
-            <div class="time-display" id="timeDisplay">00:00 / 00:00</div>
-            
-            <div class="volume-container">
-                <i class="fas fa-volume-up" style="color: #aaa;"></i>
-                <input type="range" min="0" max="100" value="100" class="volume-slider" id="volumeSlider" onchange="changeVolume(this.value)">
+        <button class="play-btn" id="playBtn" onclick="togglePlayPause()">
+            <i class="fas fa-play" id="playIcon"></i>
+        </button>
+        
+        <div class="controls-overlay" id="controlsOverlay">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
             </div>
-            
-            <button class="control-btn fullscreen-btn" onclick="toggleFullscreen()">
-                <i class="fas fa-expand" id="fullscreenIcon"></i>
-            </button>
         </div>
     </div>
 
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
     <script>
-        // Telegram Web App initialization
-        const tg = window.Telegram.WebApp;
-        tg.ready();
-        tg.expand();
-        
-        // Get file ID from URL
+        // Get video source from URL parameters or use a default
         const urlParams = new URLSearchParams(window.location.search);
-        const fileId = urlParams.get('file_id');
+        const videoUrl = urlParams.get('video') || 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4';
         
         // DOM elements
+        const videoPlayer = document.getElementById('videoPlayer');
         const loadingScreen = document.getElementById('loadingScreen');
         const errorScreen = document.getElementById('errorScreen');
         const errorTitle = document.getElementById('errorTitle');
         const errorMessage = document.getElementById('errorMessage');
-        const driveFrame = document.getElementById('drive-frame');
         const playBtn = document.getElementById('playBtn');
         const playIcon = document.getElementById('playIcon');
-        const timeDisplay = document.getElementById('timeDisplay');
-        const volumeSlider = document.getElementById('volumeSlider');
-        const infoPanel = document.getElementById('infoPanel');
+        const controlsOverlay = document.getElementById('controlsOverlay');
+        const progressFill = document.getElementById('progressFill');
         
-        // Video state
         let isPlaying = false;
-        let playerReady = false;
+        let hideControlsTimeout;
         
-        // Google Drive embed URL
-        const embedUrl = `https://drive.google.com/file/d/${fileId}/preview`;
-        
-        // Initialize player
+        // Initialize video player
         function initPlayer() {
-            if (!fileId) {
-                showError('No File ID', 'Please provide a valid Google Drive file ID.');
-                return;
-            }
+            console.log('Loading video:', videoUrl);
             
-            console.log('Loading Google Drive embed:', embedUrl);
+            // Set video source
+            videoPlayer.src = videoUrl;
+            videoPlayer.load();
             
-            // Set iframe source
-            driveFrame.src = embedUrl;
-            
-            // Hide iframe initially
-            driveFrame.style.display = 'none';
-            
-            // Wait for iframe to load
-            driveFrame.onload = function() {
-                setTimeout(() => {
-                    loadingScreen.style.display = 'none';
-                    driveFrame.style.display = 'block';
-                    playerReady = true;
-                    
-                    // Inject keyboard controls into iframe
-                    injectControls();
-                    
-                    // Start checking if video is loaded
-                    checkVideoLoad();
-                }, 2000);
-            };
-            
-            driveFrame.onerror = function() {
-                showError('Load Failed', 'Could not load Google Drive player. The file might not exist or is not accessible.');
-            };
+            // Event listeners
+            videoPlayer.addEventListener('loadeddata', onVideoLoaded);
+            videoPlayer.addEventListener('canplay', onVideoReady);
+            videoPlayer.addEventListener('error', onVideoError);
+            videoPlayer.addEventListener('play', onVideoPlay);
+            videoPlayer.addEventListener('pause', onVideoPause);
+            videoPlayer.addEventListener('timeupdate', updateProgress);
+            videoPlayer.addEventListener('click', togglePlayPause);
+            videoPlayer.addEventListener('dblclick', toggleFullscreen);
             
             // Timeout in case loading takes too long
             setTimeout(() => {
-                if (loadingScreen.style.display !== 'none') {
+                if (loadingScreen.style.display !== 'none' && videoPlayer.readyState < 3) {
                     showError('Timeout', 'Taking too long to load. Try again or check your internet connection.');
                 }
             }, 15000);
         }
         
-        // Check if video is actually loaded in iframe
-        function checkVideoLoad() {
-            const checkInterval = setInterval(() => {
-                try {
-                    const iframeDoc = driveFrame.contentDocument || driveFrame.contentWindow.document;
-                    const videoElements = iframeDoc.getElementsByTagName('video');
-                    
-                    if (videoElements.length > 0) {
-                        console.log('Video element found in iframe');
-                        setupVideoControls(videoElements[0]);
-                        clearInterval(checkInterval);
-                    }
-                } catch (e) {
-                    // Cross-origin error, use fallback controls
-                    console.log('Using fallback controls');
-                    setupFallbackControls();
-                    clearInterval(checkInterval);
-                }
-            }, 1000);
+        function onVideoLoaded() {
+            console.log('Video metadata loaded');
         }
         
-        // Setup video controls when video is detected
-        function setupVideoControls(video) {
-            video.controls = false;
-            video.autoplay = false;
+        function onVideoReady() {
+            console.log('Video is ready to play');
+            loadingScreen.style.display = 'none';
             
-            // Update play button based on video state
-            video.addEventListener('play', () => {
-                isPlaying = true;
-                playIcon.className = 'fas fa-pause';
-            });
-            
-            video.addEventListener('pause', () => {
-                isPlaying = false;
-                playIcon.className = 'fas fa-play';
-            });
-            
-            // Update time display
-            video.addEventListener('timeupdate', () => {
-                const currentTime = formatTime(video.currentTime);
-                const duration = formatTime(video.duration || 0);
-                timeDisplay.textContent = `${currentTime} / ${duration}`;
-            });
-            
-            // Handle volume
-            video.volume = volumeSlider.value / 100;
+            // Auto-play if allowed
+            const playPromise = videoPlayer.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(error => {
+                    console.log('Auto-play prevented, showing play button');
+                    playBtn.style.display = 'flex';
+                });
+            }
         }
         
-        // Fallback controls when we can't access iframe internals
-        function setupFallbackControls() {
-            // These will control the iframe via postMessage if possible
-            console.log('Using fallback controls for Google Drive');
+        function onVideoError(e) {
+            console.error('Video error:', e);
+            showError('Load Failed', 'Could not load the video. The file might not exist or is not accessible.');
         }
         
-        // Toggle play/pause
+        function onVideoPlay() {
+            isPlaying = true;
+            playIcon.className = 'fas fa-pause';
+            playBtn.style.display = 'none';
+            showControls();
+        }
+        
+        function onVideoPause() {
+            isPlaying = false;
+            playIcon.className = 'fas fa-play';
+            playBtn.style.display = 'flex';
+            showControls();
+        }
+        
         function togglePlayPause() {
-            if (!playerReady) return;
-            
-            try {
-                const iframeWindow = driveFrame.contentWindow;
-                
-                // Try to send play/pause command to iframe
-                iframeWindow.postMessage({
-                    action: isPlaying ? 'pause' : 'play'
-                }, '*');
-                
-                isPlaying = !isPlaying;
-                playIcon.className = isPlaying ? 'fas fa-pause' : 'fas fa-play';
-                
-            } catch (e) {
-                console.log('Could not control iframe directly');
-                
-                // Fallback: Toggle play state UI only
-                isPlaying = !isPlaying;
-                playIcon.className = isPlaying ? 'fas fa-pause' : 'fas fa-play';
-            }
-        }
-        
-        // Change volume
-        function changeVolume(value) {
-            try {
-                const iframeWindow = driveFrame.contentWindow;
-                iframeWindow.postMessage({
-                    action: 'volume',
-                    value: value / 100
-                }, '*');
-            } catch (e) {
-                console.log('Could not change volume');
-            }
-        }
-        
-        // Toggle fullscreen
-        function toggleFullscreen() {
-            if (!document.fullscreenElement) {
-                document.querySelector('.container').requestFullscreen()
-                    .then(() => {
-                        document.getElementById('fullscreenIcon').className = 'fas fa-compress';
-                    });
+            if (videoPlayer.paused || videoPlayer.ended) {
+                videoPlayer.play();
             } else {
-                document.exitFullscreen()
-                    .then(() => {
-                        document.getElementById('fullscreenIcon').className = 'fas fa-expand';
-                    });
+                videoPlayer.pause();
+            }
+            showControls();
+        }
+        
+        function updateProgress() {
+            if (videoPlayer.duration) {
+                const progress = (videoPlayer.currentTime / videoPlayer.duration) * 100;
+                progressFill.style.width = `${progress}%`;
             }
         }
         
-        // Show error message
+        function showControls() {
+            controlsOverlay.style.display = 'block';
+            playBtn.style.display = isPlaying ? 'none' : 'flex';
+            
+            clearTimeout(hideControlsTimeout);
+            if (isPlaying) {
+                hideControlsTimeout = setTimeout(() => {
+                    controlsOverlay.style.display = 'none';
+                    playBtn.style.display = 'none';
+                }, 3000);
+            }
+        }
+        
         function showError(title, message) {
             loadingScreen.style.display = 'none';
             errorTitle.textContent = title;
@@ -548,76 +322,83 @@
             errorScreen.style.display = 'flex';
         }
         
-        // Retry loading
         function retryLoading() {
             errorScreen.style.display = 'none';
             loadingScreen.style.display = 'flex';
             initPlayer();
         }
         
-        // Toggle info panel
-        function toggleInfo() {
-            infoPanel.style.display = infoPanel.style.display === 'block' ? 'none' : 'block';
-            
-            if (infoPanel.style.display === 'block') {
-                setTimeout(() => {
-                    infoPanel.style.display = 'none';
-                }, 5000);
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    console.log(`Error attempting to enable fullscreen: ${err.message}`);
+                });
+            } else {
+                document.exitFullscreen();
             }
         }
         
-        // Format time (seconds to MM:SS)
-        function formatTime(seconds) {
-            if (isNaN(seconds)) return '00:00';
-            const mins = Math.floor(seconds / 60);
-            const secs = Math.floor(seconds % 60);
-            return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-        }
+        // Progress bar click to seek
+        progressFill.parentElement.addEventListener('click', (e) => {
+            const rect = e.target.getBoundingClientRect();
+            const pos = (e.clientX - rect.left) / rect.width;
+            videoPlayer.currentTime = pos * videoPlayer.duration;
+            showControls();
+        });
         
-        // Inject keyboard controls
-        function injectControls() {
-            document.addEventListener('keydown', (e) => {
-                switch(e.key.toLowerCase()) {
-                    case ' ':
-                    case 'k':
-                        e.preventDefault();
-                        togglePlayPause();
-                        break;
-                    case 'arrowleft':
-                        e.preventDefault();
-                        // Skip back 10 seconds
-                        break;
-                    case 'arrowright':
-                        e.preventDefault();
-                        // Skip forward 10 seconds
-                        break;
-                    case 'f':
-                        e.preventDefault();
-                        toggleFullscreen();
-                        break;
-                    case 'i':
-                        e.preventDefault();
-                        toggleInfo();
-                        break;
-                }
-            });
-        }
+        // Keyboard controls
+        document.addEventListener('keydown', (e) => {
+            switch(e.key.toLowerCase()) {
+                case ' ':
+                case 'k':
+                    e.preventDefault();
+                    togglePlayPause();
+                    break;
+                case 'arrowleft':
+                    e.preventDefault();
+                    videoPlayer.currentTime = Math.max(0, videoPlayer.currentTime - 10);
+                    showControls();
+                    break;
+                case 'arrowright':
+                    e.preventDefault();
+                    videoPlayer.currentTime = Math.min(videoPlayer.duration, videoPlayer.currentTime + 10);
+                    showControls();
+                    break;
+                case 'f':
+                    e.preventDefault();
+                    toggleFullscreen();
+                    break;
+                case 'm':
+                    e.preventDefault();
+                    videoPlayer.muted = !videoPlayer.muted;
+                    showControls();
+                    break;
+            }
+        });
+        
+        // Mouse movement detection
+        document.addEventListener('mousemove', () => {
+            if (isPlaying) {
+                showControls();
+            }
+        });
+        
+        // Touch events for mobile
+        document.addEventListener('touchstart', () => {
+            if (isPlaying) {
+                showControls();
+            }
+        });
+        
+        // Fullscreen change
+        document.addEventListener('fullscreenchange', () => {
+            if (document.fullscreenElement) {
+                videoPlayer.style.objectFit = 'contain';
+            }
+        });
         
         // Initialize when page loads
         document.addEventListener('DOMContentLoaded', initPlayer);
-        
-        // Close info panel when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!infoPanel.contains(e.target) && !e.target.classList.contains('info-btn')) {
-                infoPanel.style.display = 'none';
-            }
-        });
-        
-        // Fullscreen change listener
-        document.addEventListener('fullscreenchange', () => {
-            const icon = document.getElementById('fullscreenIcon');
-            icon.className = document.fullscreenElement ? 'fas fa-compress' : 'fas fa-expand';
-        });
     </script>
 </body>
 </html>
